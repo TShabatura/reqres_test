@@ -2,8 +2,6 @@ import endpoints.Endpoints;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
-import static io.restassured.RestAssured.given;
-
 public class ReqresTest {
 
     @Test
@@ -14,55 +12,48 @@ public class ReqresTest {
 
     @Test
     public void getListOfUsersTest(){
-        String endpoint = "https://reqres.in/api/users?page=2";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().getListOfUsersByPage(2);
         response.then().statusCode(200);
     }
 
     @Test
     public void getInexistentUserTest(){
-        String endpoint = "https://reqres.in/api/user/100";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().getUserById(100);
         response.then().statusCode(404);
     }
 
     @Test
     public void getResourceByIdTest(){
-        String endpoint = "https://reqres.in/api/unknown/2";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().getResourceById(1);
         response.then().statusCode(200);
     }
 
     @Test
     public void getListOfResourcesTest(){
-        String endpoint = "https://reqres.in/api/unknown";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().getListOfResourcesByPage(1);
         response.then().statusCode(200);
     }
 
     @Test
     public void getInexistentResourceTest(){
-        String endpoint = "https://reqres.in/api/unknown/100";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().getResourceById(100);
         response.then().statusCode(404);
     }
 
     @Test
     public void createNewUserTest(){
-        String endpoint = "https://reqres.in/api/users";
         String body = """
                         {
                             "name": "morpheus",
                             "job": "leader"
                         }
                 """;
-        Response response = given().body(body).when().post(endpoint);
+        Response response = new Endpoints().createUser(body);
         response.then().statusCode(201);
     }
 
     @Test
     public void updateExistedUserTest(){
-        String endpoint = "https://reqres.in/api/users/";
         int id = 1;
         String body = """
                         {
@@ -70,13 +61,12 @@ public class ReqresTest {
                             "job": "leader"
                         }
                 """;
-        Response response = given().body(body).when().put(endpoint + id);
+        Response response = new Endpoints().updateUserById(id, body);
         response.then().statusCode(200);
     }
 
     @Test
     public void patchExistedUserTest(){
-        String endpoint = "https://reqres.in/api/users/";
         int id = 1;
         String body = """
                         {
@@ -84,73 +74,66 @@ public class ReqresTest {
                             "job": "leader"
                         }
                 """;
-        Response response = given().body(body).when().patch(endpoint + id);
+        Response response = new Endpoints().patchUserById(id, body);
         response.then().statusCode(200);
     }
 
     @Test
     public void deleteExistedUserTest(){
-        String endpoint = "https://reqres.in/api/users/";
         int id = 1;
-        Response response = given().when().delete(endpoint + id);
-        response.then().log().body();
+        Response response = new Endpoints().deleteUserById(id);
         response.then().statusCode(204);
     }
 
     @Test
     public void successfulRegisterTest(){
-        String endpoint = "https://reqres.in/api/register";
         String body = """
                         {
                             "email": "eve.holt@reqres.in",
                             "name": "pistol"
                         }
                 """;
-        Response response = given().body(body).when().post(endpoint);
+        Response response = new Endpoints().register(body);
         response.then().statusCode(200);
     }
 
     @Test
     public void unsuccessfulRegisterTest(){
-        String endpoint = "https://reqres.in/api/register";
         String body = """
                         {
                             "email": "eve.holt@reqres.in"                       
                         }
                 """;
-        Response response = given().body(body).when().post(endpoint);
+        Response response = new Endpoints().register(body);
         response.then().statusCode(400);
     }
 
     @Test
     public void successfulLoginTest(){
-        String endpoint = "https://reqres.in/api/login";
         String body = """
                         {
                             "email": "eve.holt@reqres.in",
                             "password": "cityslicka"
                         }
                 """;
-        Response response = given().body(body).when().post(endpoint);
+        Response response = new Endpoints().login(body);
         response.then().statusCode(200);
     }
 
     @Test
     public void unsuccessfulLoginTest() {
-        String endpoint = "https://reqres.in/api/login";
         String body = """
                         {
                             "email": "eve.holt@reqres.in"
                         }
                 """;
-        Response response = given().body(body).when().post(endpoint);
+        Response response = new Endpoints().login(body);
         response.then().statusCode(400);
     }
 
     @Test
     public void delayedResponseTest(){
-        String endpoint = "https://reqres.in/api/users?delay=3";
-        Response response = given().when().get(endpoint);
+        Response response = new Endpoints().delayedResponse(3);
         response.then().statusCode(200);
     }
 }
