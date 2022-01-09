@@ -1,6 +1,10 @@
 package endpoints;
 
 import io.restassured.response.Response;
+import models.CreateModel;
+import models.LoginModel;
+import models.RegisterModel;
+import models.UpdateModel;
 
 import static io.restassured.RestAssured.given;
 
@@ -31,19 +35,19 @@ public class Endpoints {
                 then().extract().response();
     }
 
-    public Response createUser(String body){
+    public Response createUser(CreateModel body){
         return given().body(body).
                 when().post(BASE_ENDPOINT + "users").
                 then().extract().response();
     }
 
-    public Response updateUserById(int id, String body){
+    public Response updateUserById(int id, UpdateModel body){
         return given().body(body).
                 when().put(BASE_ENDPOINT + "users/" + id).
                 then().extract().response();
     }
 
-    public Response patchUserById(int id, String body){
+    public Response patchUserById(int id, UpdateModel body){
         return given().body(body).
                 when().patch(BASE_ENDPOINT + "users/" + id).
                 then().extract().response();
@@ -55,14 +59,14 @@ public class Endpoints {
                 then().extract().response();
     }
 
-    public Response register(String body){
-        return given().body(body).
+    public Response register(RegisterModel registerData){
+        return given().body(registerData).
                 when().post(BASE_ENDPOINT + "register").
                 then().extract().response();
     }
 
-    public Response login(String body){
-        return given().body(body).
+    public Response login(LoginModel loginData){
+        return given().body(loginData).
                 when().post(BASE_ENDPOINT + "login").
                 then().extract().response();
     }

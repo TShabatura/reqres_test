@@ -1,13 +1,47 @@
 import endpoints.Endpoints;
 import io.restassured.response.Response;
+import models.*;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 public class ReqresTest {
 
+    LoginModel validLoginData = new LoginModel(
+            "eve.holt@reqres.in",
+            "cityslicka"
+    );
+
+    LoginModel invalidLoginData = new LoginModel(
+            "eve.holt@reqres.in"
+    );
+
+    RegisterModel validRegisterData = new RegisterModel(
+            "eve.holt@reqres.in",
+            "pistol"
+    );
+
+    RegisterModel invalidRegisterData = new RegisterModel(
+            "eve.holt@reqres.in"
+    );
+
+    CreateModel createModel = new CreateModel(
+            "morpheus",
+            "leader"
+    );
+
+    UpdateModel updateModel = new UpdateModel(
+            "morpheus",
+            "zion resident"
+    );
+    int id = 1;
+
+
     @Test
     public void getUserByIdTest (){
-        Response response = new Endpoints().getUserById(2);
+        Response response = new Endpoints().getUserById(id);
         response.then().statusCode(200);
+        Assert.assertEquals(response.as(User.class).getData().getId(), id);
     }
 
     @Test
@@ -24,7 +58,7 @@ public class ReqresTest {
 
     @Test
     public void getResourceByIdTest(){
-        Response response = new Endpoints().getResourceById(1);
+        Response response = new Endpoints().getResourceById(id);
         response.then().statusCode(200);
     }
 
@@ -42,92 +76,61 @@ public class ReqresTest {
 
     @Test
     public void createNewUserTest(){
-        String body = """
-                        {
-                            "name": "morpheus",
-                            "job": "leader"
-                        }
-                """;
-        Response response = new Endpoints().createUser(body);
+        Response response = new Endpoints().createUser(createModel);
         response.then().statusCode(201);
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(response.as(CreateModel.class).getName(), createModel.getName());
+        softAssert.assertEquals(response.as(CreateModel.class).getJob(), createModel.getJob());
+        softAssert.assertAll();
     }
 
     @Test
     public void updateExistedUserTest(){
-        int id = 1;
-        String body = """
-                        {
-                            "name": "morpheus",
-                            "job": "leader"
-                        }
-                """;
-        Response response = new Endpoints().updateUserById(id, body);
+        Response response = new Endpoints().updateUserById(id, updateModel);
         response.then().statusCode(200);
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(response.as(UpdateModel.class).getName(), updateModel.getName());
+        softAssert.assertEquals(response.as(UpdateModel.class).getJob(), updateModel.getJob());
+        softAssert.assertAll();
     }
 
     @Test
     public void patchExistedUserTest(){
-        int id = 1;
-        String body = """
-                        {
-                            "name": "morpheus",
-                            "job": "leader"
-                        }
-                """;
-        Response response = new Endpoints().patchUserById(id, body);
+        Response response = new Endpoints().patchUserById(id, updateModel);
         response.then().statusCode(200);
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(response.as(UpdateModel.class).getName(), updateModel.getName());
+        softAssert.assertEquals(response.as(UpdateModel.class).getJob(), updateModel.getJob());
+        softAssert.assertAll();
     }
 
     @Test
     public void deleteExistedUserTest(){
-        int id = 1;
         Response response = new Endpoints().deleteUserById(id);
         response.then().statusCode(204);
     }
 
     @Test
     public void successfulRegisterTest(){
-        String body = """
-                        {
-                            "email": "eve.holt@reqres.in",
-                            "name": "pistol"
-                        }
-                """;
-        Response response = new Endpoints().register(body);
+        Response response = new Endpoints().register(validRegisterData);
         response.then().statusCode(200);
     }
 
     @Test
     public void unsuccessfulRegisterTest(){
-        String body = """
-                        {
-                            "email": "eve.holt@reqres.in"                       
-                        }
-                """;
-        Response response = new Endpoints().register(body);
+        Response response = new Endpoints().register(invalidRegisterData);
         response.then().statusCode(400);
     }
 
     @Test
     public void successfulLoginTest(){
-        String body = """
-                        {
-                            "email": "eve.holt@reqres.in",
-                            "password": "cityslicka"
-                        }
-                """;
-        Response response = new Endpoints().login(body);
+        Response response = new Endpoints().login(validLoginData);
         response.then().statusCode(200);
     }
 
     @Test
     public void unsuccessfulLoginTest() {
-        String body = """
-                        {
-                            "email": "eve.holt@reqres.in"
-                        }
-                """;
-        Response response = new Endpoints().login(body);
+        Response response = new Endpoints().login(invalidLoginData);
         response.then().statusCode(400);
     }
 
